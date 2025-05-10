@@ -86,9 +86,10 @@
 }
 
 /* Weather icon styles */
-.weather-icon img {
+.weather-icon img, .weather-icon-large img {
   width: 100%;
   height: auto;
+  filter: invert(10%) contrast(110%);
 }
 
 /* Common container styles */
