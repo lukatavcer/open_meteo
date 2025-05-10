@@ -80,7 +80,7 @@ export const getLocationInfo = async (latitude: number, longitude: number): Prom
     // The Open-Meteo Geocoding API does not support reverse geocoding (lat/lon → city name),
     // so we fetch it from the openstreetmap.
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&accept-language=en`
     );
 
     if (!response.ok) {
