@@ -59,7 +59,7 @@ export const fetchForecast = async (latitude: number, longitude: number): Promis
     // Fetch location information
     const location = await getLocationInfo(latitude, longitude);
 
-    // Get current date
+    // Get the current date
     const today = new Date();
 
     // Format dates for API request (YYYY-MM-DD)
