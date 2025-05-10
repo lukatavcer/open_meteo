@@ -7,6 +7,48 @@ import {
 } from "../types/weather";
 
 /**
+ * Searches for cities by name using OpenStreetMap's Nominatim service
+ * @param query The search query (city name)
+ * @returns Promise with an array of location results
+ */
+export const searchCities = async (query: string): Promise<Location[]> => {
+  try {
+    if (!query.trim()) {
+      return [];
+    }
+
+    // Using OpenStreetMap's Nominatim service for geocoding
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`
+    );
+
+    if (!response.ok) {
+      throw new Error(`City search API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("City search results:", data);
+
+    // Map the API response to our Location interface
+    return data.map((item: any) => ({
+      city:
+        item.address.city ||
+        item.address.town ||
+        item.address.municipality ||
+        item.address.village ||
+        item.name ||
+        "Unknown",
+      country: item.address.country || "Unknown",
+      latitude: parseFloat(item.lat),
+      longitude: parseFloat(item.lon),
+    }));
+  } catch (err: any) {
+    console.error("Error searching for cities:", err);
+    throw new Error(err.message || "Failed to search for cities");
+  }
+};
+
+/**
  * Fetches the user's current location using the browser's Geolocation API
  * @returns Promise with the user's location (latitude and longitude)
  */

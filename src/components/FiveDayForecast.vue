@@ -34,10 +34,15 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from "vue";
-  import { ForecastData } from "../types/weather";
+  import { ref, onMounted, watch, defineProps } from "vue";
+  import { ForecastData, Location } from "../types/weather";
   import { getUserLocation, fetchForecast } from "../api/weatherService";
   import { getWeatherIconUrl } from "../utils/weatherIcons";
+
+  // Props
+  const props = defineProps<{
+    selectedLocation?: Location | null;
+  }>();
 
   // State
   const forecast = ref<ForecastData | null>(null);
@@ -56,13 +61,24 @@
   };
 
   // Load forecast data
-  const loadForecastData = async () => {
+  const loadForecastData = async (location?: Location) => {
     loading.value = true;
     error.value = null;
 
     try {
-      // Get user's location
-      const { latitude, longitude } = await getUserLocation();
+      let latitude: number;
+      let longitude: number;
+
+      if (location) {
+        // Use provided location
+        latitude = location.latitude;
+        longitude = location.longitude;
+      } else {
+        // Get user's location as fallback
+        const userLocation = await getUserLocation();
+        latitude = userLocation.latitude;
+        longitude = userLocation.longitude;
+      }
 
       // Fetch forecast data
       forecast.value = await fetchForecast(latitude, longitude);
@@ -74,8 +90,23 @@
     }
   };
 
-  // Load forecast data when component is mounted
-  onMounted(loadForecastData);
+  // Watch for changes in selected location
+  watch(
+    () => props.selectedLocation,
+    newLocation => {
+      if (newLocation) {
+        loadForecastData(newLocation);
+      }
+    },
+    { immediate: true }
+  );
+
+  // Load forecast data when the component is mounted (if no location is selected)
+  onMounted(() => {
+    if (!props.selectedLocation) {
+      loadForecastData();
+    }
+  });
 </script>
 
 <style scoped>
@@ -179,6 +210,30 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+  }
+
+  /* Mobile responsive styles for horizontal scrolling */
+  @media (max-width: 768px) {
+    .forecast-days {
+      justify-content: flex-start;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 1rem; /* Add padding for scrollbar */
+      /* Hide scrollbar for IE, Edge, and Firefox */
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+    /* Hide scrollbar for Chrome, Safari, and Opera */
+    .forecast-days::-webkit-scrollbar {
+      display: none;
+    }
+
+    .forecast-day {
+      flex: 0 0 auto;
+      width: 120px; /* Fixed width for each day on mobile */
+    }
   }
 
   .forecast-day:last-child {

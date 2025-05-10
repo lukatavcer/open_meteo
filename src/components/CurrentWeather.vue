@@ -33,10 +33,15 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from "vue";
-  import { CurrentWeather } from "../types/weather";
+  import { ref, onMounted, watch, defineProps } from "vue";
+  import { CurrentWeather, Location } from "../types/weather";
   import { getUserLocation, fetchCurrentWeather } from "../api/weatherService";
   import { getWeatherIconUrl } from "../utils/weatherIcons";
+
+  // Props
+  const props = defineProps<{
+    selectedLocation?: Location | null;
+  }>();
 
   // State
   const weather = ref<CurrentWeather | null>(null);
@@ -44,13 +49,24 @@
   const error = ref<string | null>(null);
 
   // Load weather data
-  const loadWeatherData = async () => {
+  const loadWeatherData = async (location?: Location) => {
     loading.value = true;
     error.value = null;
 
     try {
-      // Get user's location
-      const { latitude, longitude } = await getUserLocation();
+      let latitude: number;
+      let longitude: number;
+
+      if (location) {
+        // Use provided location
+        latitude = location.latitude;
+        longitude = location.longitude;
+      } else {
+        // Get user's location as fallback
+        const userLocation = await getUserLocation();
+        latitude = userLocation.latitude;
+        longitude = userLocation.longitude;
+      }
 
       // Fetch current weather data
       weather.value = await fetchCurrentWeather(latitude, longitude);
@@ -62,14 +78,29 @@
     }
   };
 
-  // Load weather data when component is mounted
-  onMounted(loadWeatherData);
+  // Watch for changes in selected location
+  watch(
+    () => props.selectedLocation,
+    newLocation => {
+      if (newLocation) {
+        loadWeatherData(newLocation);
+      }
+    },
+    { immediate: true }
+  );
+
+  // Load weather data when the component is mounted (if no location is selected)
+  onMounted(() => {
+    if (!props.selectedLocation) {
+      loadWeatherData();
+    }
+  });
 </script>
 
 <style scoped>
   .weather-container {
     width: 100%;
-    max-width: 500px;
+    max-width: 400px;
     margin: 0 auto;
     padding: 1rem;
   }
