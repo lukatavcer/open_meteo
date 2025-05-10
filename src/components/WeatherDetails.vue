@@ -126,89 +126,16 @@
 
 <style scoped>
   .weather-details-container {
-    width: 100%;
     max-width: 600px;
-    margin: 0 auto;
-    padding: 1rem;
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-
-  .loading-spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top: 4px solid #3498db;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .loading-text {
-    color: #666;
-    font-size: 1rem;
-  }
-
-  .error-container {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .error-message {
-    color: #e74c3c;
-    margin-bottom: 1rem;
-  }
-
-  .retry-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .retry-button:hover {
-    background-color: #2980b9;
-  }
-
-  .weather-details-card {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   }
 
   .location-header {
-    background-color: #3498db;
-    color: white;
     padding: 1.5rem;
-    text-align: center;
   }
 
   .location-name {
     font-size: 2rem;
     font-weight: 700;
-    margin: 0;
   }
 
   .weather-content {
@@ -274,18 +201,8 @@
   }
 
   .back-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
     padding: 0.75rem 1.5rem;
-    border-radius: 4px;
-    cursor: pointer;
     font-size: 1rem;
     font-weight: 600;
-    transition: background-color 0.2s;
-  }
-
-  .back-button:hover {
-    background-color: #2980b9;
   }
 </style>

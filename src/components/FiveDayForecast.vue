@@ -111,89 +111,8 @@
 
 <style scoped>
   .forecast-container {
-    width: 100%;
     max-width: 800px;
     margin: 2rem auto 0;
-    padding: 1rem;
-  }
-
-  .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
-  }
-
-  .loading-spinner {
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top: 4px solid #3498db;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite;
-    margin-bottom: 1rem;
-  }
-
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
-  .loading-text {
-    color: #666;
-    font-size: 1rem;
-  }
-
-  .error-container {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .error-message {
-    color: #e74c3c;
-    margin-bottom: 1rem;
-  }
-
-  .retry-button {
-    background-color: #3498db;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-  }
-
-  .retry-button:hover {
-    background-color: #2980b9;
-  }
-
-  .forecast-card {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .location-info {
-    background-color: #3498db;
-    color: white;
-    padding: 1rem;
-    text-align: center;
-  }
-
-  .location-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin: 0;
   }
 
   .forecast-days {
@@ -251,11 +170,6 @@
     height: 60px;
     margin: 0 auto 0.5rem;
     filter: invert(10%) contrast(110%);
-  }
-
-  .weather-icon img {
-    width: 100%;
-    height: 100%;
   }
 
   .temperatures {

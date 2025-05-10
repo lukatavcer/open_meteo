@@ -20,6 +20,7 @@
   // Handle back button click
   const handleBackToHome = () => {
     showDetailsPage.value = false;
+    selectedLocation.value = null;
   };
 
   // Handle show details from CurrentWeather

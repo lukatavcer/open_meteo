@@ -189,45 +189,27 @@
     z-index: 100;
   }
 
+  /* Override global loading container for search */
   .loading-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
     padding: 1.5rem;
   }
 
   .loading-spinner {
-    border: 3px solid rgba(0, 0, 0, 0.1);
-    border-radius: 50%;
-    border-top: 3px solid #3498db;
+    border-width: 3px;
     width: 24px;
     height: 24px;
-    animation: spin 1s linear infinite;
     margin-bottom: 0.5rem;
   }
 
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-
   .loading-text {
-    color: #666;
     font-size: 0.9rem;
   }
 
   .error-container {
     padding: 1rem;
-    text-align: center;
   }
 
   .error-message {
-    color: #e74c3c;
     font-size: 0.9rem;
   }
 
