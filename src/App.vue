@@ -30,7 +30,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-screen bg-gray-50">
     <header class="bg-slate-800 text-white py-4 px-6 shadow-md fixed top-0 w-full z-10">
       <h1 class="text-xl font-bold cursor-pointer" @click="handleBackToHome">Weather App</h1>
     </header>
