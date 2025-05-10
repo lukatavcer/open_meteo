@@ -2,6 +2,11 @@
 
 A Vue.js application that displays weather information using the [Open Meteo API](https://open-meteo.com/en/docs).
 
+
+## Live Demo
+The site is available at: https://lukatavcer.github.io/open_meteo/
+
+
 ## Architecture Overview
 
 The application follows a modular architecture designed for scalability and maintainability:
