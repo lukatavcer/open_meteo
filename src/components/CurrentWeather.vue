@@ -7,7 +7,7 @@
 
     <div v-else-if="error" class="error-container">
       <p class="error-message">{{ error }}</p>
-      <button @click="loadWeatherData" class="retry-button">Try Again</button>
+      <button @click="loadWeatherData()" class="retry-button">Try Again</button>
     </div>
 
     <div v-else-if="weather" class="weather-card">

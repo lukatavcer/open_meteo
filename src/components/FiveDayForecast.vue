@@ -7,7 +7,7 @@
 
     <div v-else-if="error" class="error-container">
       <p class="error-message">{{ error }}</p>
-      <button @click="loadForecastData" class="retry-button">Try Again</button>
+      <button @click="loadForecastData()" class="retry-button">Try Again</button>
     </div>
 
     <div v-else-if="forecast" class="forecast-card">
@@ -221,8 +221,8 @@
       -webkit-overflow-scrolling: touch;
       padding-bottom: 1rem; /* Add padding for scrollbar */
       /* Hide scrollbar for IE, Edge, and Firefox */
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
     }
 
     /* Hide scrollbar for Chrome, Safari, and Opera */
