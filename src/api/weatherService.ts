@@ -127,7 +127,7 @@ export const fetchCurrentWeather = async (
 
     // Fetch weather data from Open-Meteo API
     const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m`
     );
 
     if (!response.ok) {
@@ -142,6 +142,8 @@ export const fetchCurrentWeather = async (
       temperature: data.current.temperature_2m,
       weatherCode,
       weatherCondition: weatherCodeToCondition[weatherCode] || "Unknown",
+      windSpeed: data.current.wind_speed_10m,
+      humidity: data.current.relative_humidity_2m,
       location,
     };
   } catch (err: any) {

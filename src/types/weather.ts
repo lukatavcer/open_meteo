@@ -5,6 +5,8 @@ export interface CurrentWeather {
   temperature: number;
   weatherCode: number;
   weatherCondition: string;
+  windSpeed?: number;
+  humidity?: number;
   location: Location;
 }
 
