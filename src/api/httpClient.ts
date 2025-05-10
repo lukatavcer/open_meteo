@@ -1,6 +1,8 @@
 // HTTP client for making API requests
 // Provides a consistent way to make HTTP requests and handle errors
 
+import { error as logError } from "../utils/logger";
+
 /**
  * Options for HTTP requests
  */
@@ -76,10 +78,6 @@ export class HttpClient {
    * @param url URL that was requested
    */
   private static async handleError(error: any, url: string): Promise<void> {
-    // Import logger dynamically to avoid circular dependencies
-    const loggerModule = await import("../utils/logger");
-    const logError = loggerModule.error;
-
     // Log error for debugging
     logError(`Error making request to ${url}:`, error);
 
