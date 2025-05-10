@@ -250,6 +250,7 @@
     width: 60px;
     height: 60px;
     margin: 0 auto 0.5rem;
+    filter: invert(10%) contrast(110%);
   }
 
   .weather-icon img {

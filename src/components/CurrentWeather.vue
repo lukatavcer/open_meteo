@@ -10,7 +10,7 @@
       <button @click="loadWeatherData()" class="retry-button">Try Again</button>
     </div>
 
-    <div v-else-if="weather" class="weather-card">
+    <div v-else-if="weather" class="weather-card" @click="showDetails" role="button" tabindex="0">
       <div class="location-info">
         <h3 class="location-title">Current weather in</h3>
         <h2 class="location-name">{{ weather.location.city }}, {{ weather.location.country }}</h2>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watch, defineProps } from "vue";
+  import { ref, onMounted, watch, defineProps, defineEmits } from "vue";
   import { CurrentWeather, Location } from "../types/weather";
   import { getUserLocation, fetchCurrentWeather } from "../api/weatherService";
   import { getWeatherIconUrl } from "../utils/weatherIcons";
@@ -42,6 +42,16 @@
   const props = defineProps<{
     selectedLocation?: Location | null;
   }>();
+
+  // Emits
+  const emit = defineEmits<{
+    (e: "show-details"): void;
+  }>();
+
+  // Show weather details
+  const showDetails = () => {
+    emit("show-details");
+  };
 
   // State
   const weather = ref<CurrentWeather | null>(null);
@@ -169,6 +179,15 @@
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .weather-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   }
 
   .location-info {

@@ -7,7 +7,7 @@ import {
 } from "../types/weather";
 
 /**
- * Searches for cities by name using OpenStreetMap's Nominatim service
+ * Searches for cities by name using OpenMeteo's Geocoding API
  * @param query The search query (city name)
  * @returns Promise with an array of location results
  */
@@ -17,9 +17,9 @@ export const searchCities = async (query: string): Promise<Location[]> => {
       return [];
     }
 
-    // Using OpenStreetMap's Nominatim service for geocoding
+    // Using OpenMeteo's Geocoding API
     const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`
+      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`
     );
 
     if (!response.ok) {
@@ -30,18 +30,14 @@ export const searchCities = async (query: string): Promise<Location[]> => {
     console.log("City search results:", data);
 
     // Map the API response to our Location interface
-    return data.map((item: any) => ({
-      city:
-        item.address.city ||
-        item.address.town ||
-        item.address.municipality ||
-        item.address.village ||
-        item.name ||
-        "Unknown",
-      country: item.address.country || "Unknown",
-      latitude: parseFloat(item.lat),
-      longitude: parseFloat(item.lon),
-    }));
+    return data.results
+      ? data.results.map((item: any) => ({
+          city: item.name || "Unknown",
+          country: item.country || "Unknown",
+          latitude: item.latitude,
+          longitude: item.longitude,
+        }))
+      : [];
   } catch (err: any) {
     console.error("Error searching for cities:", err);
     throw new Error(err.message || "Failed to search for cities");
@@ -81,7 +77,8 @@ export const getUserLocation = (): Promise<{ latitude: number; longitude: number
  */
 export const getLocationInfo = async (latitude: number, longitude: number): Promise<Location> => {
   try {
-    // Using OpenStreetMap's Nominatim service for reverse geocoding
+    // The Open-Meteo Geocoding API does not support reverse geocoding (lat/lon → city name),
+    // so we fetch it from the openstreetmap.
     const response = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`
     );
