@@ -1,9 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { HttpClient, HttpRequestOptions } from "../../../src/api/httpClient";
 
 // Mock global fetch
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
+
+// Mock logger
+vi.mock("../../../src/utils/logger", () => ({
+  default: {
+    error: vi.fn(),
+  },
+  error: vi.fn(),
+}));
 
 describe("HttpClient", () => {
   beforeEach(() => {
