@@ -1,112 +1,12 @@
-import {
-  CurrentWeather,
-  ForecastData,
-  ForecastDay,
-  Location,
-  weatherCodeToCondition,
-} from "../types/weather";
+import { CurrentWeather, ForecastData, ForecastDay } from "../types/weather";
+import { HttpClient } from "./httpClient.ts";
+import { API_CONFIG } from "../config/api";
+import { getLocationInfo } from "./locationService";
+import { getWeatherCondition } from "../constants/weather";
+import logger from "../utils/logger";
 
-/**
- * Searches for cities by name using OpenMeteo's Geocoding API
- * @param query The search query (city name)
- * @returns Promise with an array of location results
- */
-export const searchCities = async (query: string): Promise<Location[]> => {
-  try {
-    if (!query.trim()) {
-      return [];
-    }
-
-    // Using OpenMeteo's Geocoding API
-    const response = await fetch(
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=5&language=en&format=json`
-    );
-
-    if (!response.ok) {
-      throw new Error(`City search API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("City search results:", data);
-
-    // Map the API response to our Location interface
-    return data.results
-      ? data.results.map((item: any) => ({
-          city: item.name || "Unknown",
-          country: item.country || "Unknown",
-          latitude: item.latitude,
-          longitude: item.longitude,
-        }))
-      : [];
-  } catch (err: any) {
-    console.error("Error searching for cities:", err);
-    throw new Error(err.message || "Failed to search for cities");
-  }
-};
-
-/**
- * Fetches the user's current location using the browser's Geolocation API
- * @returns Promise with the user's location (latitude and longitude)
- */
-export const getUserLocation = (): Promise<{ latitude: number; longitude: number }> => {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error("Geolocation is not supported by your browser"));
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      position => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      error => {
-        reject(new Error(`Failed to get location: ${error.message}`));
-      }
-    );
-  });
-};
-
-/**
- * Fetches location information (city, country) based on coordinates using reverse geocoding
- * @param latitude Latitude coordinate
- * @param longitude Longitude coordinate
- * @returns Promise with location information
- */
-export const getLocationInfo = async (latitude: number, longitude: number): Promise<Location> => {
-  try {
-    // The Open-Meteo Geocoding API does not support reverse geocoding (lat/lon → city name),
-    // so we fetch it from the openstreetmap.
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&accept-language=en`
-    );
-
-    if (!response.ok) {
-      throw new Error(`Geocoding API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("location: ", data);
-
-    return {
-      city: data.address.city || data.address.town || data.address.municipality || "Unknown",
-      country: data.address.country || "Unknown",
-      latitude,
-      longitude,
-    };
-  } catch (err: any) {
-    console.error("Error fetching location info:", err);
-    // Return default location info if geocoding fails
-    return {
-      city: "Unknown",
-      country: "Unknown",
-      latitude,
-      longitude,
-    };
-  }
-};
+// Re-export location services for backward compatibility
+export { searchCities, getUserLocation, getLocationInfo } from "./locationService";
 
 /**
  * Fetches current weather data from the Open-Meteo API
@@ -123,29 +23,28 @@ export const fetchCurrentWeather = async (
     const location = await getLocationInfo(latitude, longitude);
 
     // Fetch weather data from Open-Meteo API
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m`
-    );
+    const url = `${API_CONFIG.openMeteo.baseUrl}${API_CONFIG.openMeteo.forecast}`;
+    const params = {
+      latitude,
+      longitude,
+      current: "temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m",
+    };
 
-    if (!response.ok) {
-      throw new Error(`Weather API request failed with status ${response.status}`);
-    }
+    const data = await HttpClient.get<any>(url, { params });
 
-    const data = await response.json();
-    console.log("fetchCurrentWeather: ", data);
     const weatherCode = data.current.weather_code;
 
     return {
       temperature: data.current.temperature_2m,
       weatherCode,
-      weatherCondition: weatherCodeToCondition[weatherCode] || "Unknown",
+      weatherCondition: getWeatherCondition(weatherCode),
       windSpeed: data.current.wind_speed_10m,
       humidity: data.current.relative_humidity_2m,
       location,
     };
-  } catch (err: any) {
-    console.error("Error fetching current weather:", err);
-    throw new Error(err.message || "Failed to fetch weather data");
+  } catch (error) {
+    logger.error("Error fetching current weather:", error);
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch weather data");
   }
 };
 
@@ -176,16 +75,16 @@ export const fetchForecast = async (latitude: number, longitude: number): Promis
     const endDateStr = formatDate(endDate);
 
     // Fetch forecast data from Open-Meteo API
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=temperature_2m_max,temperature_2m_min,weather_code&start_date=${startDate}&end_date=${endDateStr}`
-    );
+    const url = `${API_CONFIG.openMeteo.baseUrl}${API_CONFIG.openMeteo.forecast}`;
+    const params = {
+      latitude,
+      longitude,
+      daily: "temperature_2m_max,temperature_2m_min,weather_code",
+      start_date: startDate,
+      end_date: endDateStr,
+    };
 
-    if (!response.ok) {
-      throw new Error(`Weather API request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-    console.log("fetchForecast: ", data);
+    const data = await HttpClient.get<any>(url, { params });
 
     // Process the forecast data
     const forecastDays: ForecastDay[] = [];
@@ -197,7 +96,7 @@ export const fetchForecast = async (latitude: number, longitude: number): Promis
         maxTemperature: data.daily.temperature_2m_max[i],
         minTemperature: data.daily.temperature_2m_min[i],
         weatherCode,
-        weatherCondition: weatherCodeToCondition[weatherCode] || "Unknown",
+        weatherCondition: getWeatherCondition(weatherCode),
       });
     }
 
@@ -205,8 +104,8 @@ export const fetchForecast = async (latitude: number, longitude: number): Promis
       days: forecastDays,
       location,
     };
-  } catch (err: any) {
-    console.error("Error fetching forecast:", err);
-    throw new Error(err.message || "Failed to fetch forecast data");
+  } catch (error) {
+    logger.error("Error fetching forecast:", error);
+    throw new Error(error instanceof Error ? error.message : "Failed to fetch forecast data");
   }
 };

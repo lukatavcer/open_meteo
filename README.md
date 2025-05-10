@@ -1,52 +1,63 @@
-# Open Meteo
+# Weather App - Open Meteo
 
-A Vue.js application that connects to the Open-Meteo API, fetches the weather data, and creates a simple interactive experience.
+A Vue.js application that displays weather information using the [Open Meteo API](https://open-meteo.com/en/docs).
 
-## Features
+## Architecture Overview
 
-- Connects to the [Open Meteo API](https://open-meteo.com/en/docs)
+The application follows a modular architecture designed for scalability and maintainability:
+
+### Core Components
+
+- **API Layer**: Handles communication with external services
+  - `httpClient.ts`: Base HTTP client for making API requests
+  - `weatherService.ts`: Weather-related API calls
+  - `locationService.ts`: Location-related API calls
+
+- **Configuration**: Centralizes application settings
+  - `api.ts`: API endpoints and parameters
+- **Constants**: Application-wide constants
+- **Types**: TypeScript type definitions
+- **Utilities**: Helper functions and services
+  - `logger.ts`: Centralized logging utility
+
+## Extending the Application
+
+### Adding New API Endpoints
+
+1. Add the endpoint to `src/config/api.ts`
+2. Create a new service function in the appropriate service file
+3. Use the `HttpClient` for making API requests
 
 
+### Configuring Logging
 
-## Live Demo
+The logging system can be configured in `src/main.ts`:
 
-The site is available at: https://lukatavcer.github.io/open_meteo/
+```typescript
+import logger, { LogLevel } from "./utils/logger";
 
-## Project Setup
+logger.configure({
+  level: import.meta.env.PROD ? LogLevel.ERROR : LogLevel.DEBUG,
+  prefix: '[Weather App]',
+});
+```
 
-```sh
+## Development
+
+### Setup
+
+```bash
+# Install dependencies
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# Start development server
 npm run dev
-```
 
-### Compile and Minify for Production
-
-```sh
+# Build for production
 npm run build
 ```
 
-### Linting and Formatting
-
-This project uses ESLint for code linting and Prettier for code formatting.
-
-#### Lint with ESLint
-
-```sh
-npm run lint
-```
-
-#### Format with Prettier
-
-```sh
-npm run format
-```
 
 ### License
 
 Icons used from [weather-icons](https://github.com/basmilius/weather-icons), licensed under the MIT License.
-
