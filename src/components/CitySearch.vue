@@ -26,6 +26,22 @@
       </div>
 
       <div v-else class="results-list">
+        <div class="bg-gray-200" v-if="pastSearches.length">
+          <div class="px-2 py-2">
+            Past searches:
+          </div>
+          <div
+            v-for="(result, index) in pastSearches"
+            :key="index"
+            class="result-item"
+          >
+            <div class="result-name" @click="selectCity(result)">{{ result.city }}, {{ result.country }}</div>
+            <button @click.stop="removePastSearch(index)" class="remove-button">×</button>
+          </div>
+        </div>
+        <div class="px-2 py-2">
+          Search Results:
+        </div>
         <div
           v-for="(result, index) in results"
           :key="index"
@@ -52,6 +68,7 @@
   // State
   const searchQuery = ref<string>("");
   const results = ref<Location[]>([]);
+  const pastSearches = ref<Location[]>(JSON.parse(localStorage.getItem('pastSearches') || "[]") || []);
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
   const showDropdown = ref<boolean>(false);
@@ -103,6 +120,20 @@
     emit("select", location);
     searchQuery.value = `${location.city}, ${location.country}`;
     showDropdown.value = false;
+
+    // Save the city somewhere for history
+    // pastSearches.value.push(location);
+    if (pastSearches.value.length >= 5) {
+      pastSearches.value.shift();
+    }
+    pastSearches.value.push(location);
+    localStorage.setItem('pastSearches', JSON.stringify(pastSearches.value));
+  };
+
+  // Remove a past search
+  const removePastSearch = (index: number) => {
+    pastSearches.value.splice(index, 1);
+    localStorage.setItem('pastSearches', JSON.stringify(pastSearches.value));
   };
 
   // Close dropdown when clicking outside
@@ -215,12 +246,16 @@
 
   .results-list {
     padding: 0.5rem 0;
+    max-height: 300px;
   }
 
   .result-item {
     padding: 0.75rem 1rem;
     cursor: pointer;
     transition: background-color 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   .result-item:hover {
@@ -230,5 +265,26 @@
   .result-name {
     font-size: 1rem;
     color: #333;
+    flex-grow: 1;
+    cursor: pointer;
+  }
+
+  .remove-button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: #999;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+  }
+
+  .remove-button:hover {
+    color: #666;
   }
 </style>
